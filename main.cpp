@@ -1,6 +1,7 @@
 // BitBlt color aimbot
 // for games with hp bars, outlines or colored bright enemy models
 // color aimbots require 120 fps or more to work properly (turn off vsync)
+// will not work in fullscreen mode
 //
 // 1. find the right colors, take screenshots of colored models or hp bars at multiple distances and use a color picker to get the right colors you want to aim at
 // 2. convert RGB to hex (1100FF = FF0011 because we use BGR)
@@ -12,10 +13,10 @@
 #pragma comment(lib, "winmm.lib") //timeGetTime
 
 /*
-green color RGB		BGR
-58,255,58	3AFF3A	3AFF3A
-46,222,46	2EDE2E	2EDE2E
-50,238,50	32EE32	32EE32
+green color		RGB			BGR
+58,255,58		3AFF3A		3AFF3A
+46,222,46		2EDE2E		2EDE2E
+50,238,50		32EE32		32EE32
 
 orange hp bar	RGB			BGR
 235,123,56		EB7B38		387BEB
@@ -38,7 +39,7 @@ int aimheight = 30;			//+ to aim higher, - to aim lower
 int aimfov = 10;			//low value = high aimfov, higher value = lower aimfov
 
 DWORD astime = timeGetTime();	//autoshoot timer
-unsigned int asdelay = 60;		//wait 60ms
+unsigned int asdelay = 50;		//wait 50ms
 bool IsPressed = false;
 
 BYTE colorDeviation = 0x10;
@@ -109,7 +110,7 @@ BOOL ScanPixel(HWND hwnd, PLONG pixelX, PLONG pixelY, RECT scanArea, COLORREF* t
 	return FALSE;
 }
 
-
+/*
 //create random window title
 #include <iostream>
 #include <time.h>
@@ -120,7 +121,7 @@ char RandomConsoleName()
 {
 	return consoleName[rand() % consoleNameLength];
 }
-
+*/
 
 HWND hwnd = NULL;
 int main()
@@ -197,8 +198,6 @@ int main()
 
 	while (1)
 	{
-		Sleep(1); //1 best for 120+ fps, 2 ok at 60 fps, 3+ bad
-
 		if (GetAsyncKeyState(Daimkey) & 0x8000) //only scan anything if aimkey is pressed
 		if (GetForegroundWindow() == hwnd && ScanPixel(hwnd, &pixelX, &pixelY, scanArea, targetColors, colorDeviation, &foundColor))
 		{
@@ -216,16 +215,15 @@ int main()
 
 			/*
 			//trigger radius (autoshoot will not work good without aimbot)
-			int radiusx = 2 * (centerX / 100); //3+ looks more legit
-			int radiusy = 2 * (centerY / 100);
+			int radiusx = 3 * (centerX / 100); //3+ looks more legit
+			int radiusy = 3 * (centerY / 100);
 
 			//if not fireing manually (do not interrupt manual fireing)
 			if (!GetAsyncKeyState(VK_LBUTTON))
-			//if (pixelX >= centerX - 1 && pixelX <= centerX + 1 && pixelY >= centerY - 2 && pixelY <= centerY + 2) //sucks
-			if (pixelX >= (centerX-0) - radiusx && pixelX <= (centerX-0) + radiusx && pixelY >= centerY - radiusy && pixelY <= centerY + radiusy) //sucks
+			//if in screenmiddle on target
+			if (pixelX >= centerX - radiusx && pixelX <= centerX + radiusx && pixelY >= centerY - radiusy && pixelY <= centerY + radiusy) //sucks
 			//if target color found
 			if (foundColor == targetColors[0] || foundColor == targetColors[1] || foundColor == targetColors[2])
-			//if in screenmiddle on target
 			{
 				//autoshoot on
 				if (!IsPressed)
@@ -249,6 +247,7 @@ int main()
 			}
 		}
 		*/
+		Sleep(1); //1 best for 120+ fps, 2 ok at 60 fps, 3+ bad
 	}
 
 	system("pause");
