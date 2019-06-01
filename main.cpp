@@ -14,15 +14,15 @@
 
 /*
 green color		RGB			BGR
-58,255,58		3AFF3A		3AFF3A
-46,222,46		2EDE2E		2EDE2E
-50,238,50		32EE32		32EE32
+58,255,58 		3AFF3A 		3AFF3A
+46,222,46 		2EDE2E 		2EDE2E
+50,238,50 		32EE32 		32EE32
 
-orange hp bar	RGB			BGR
-235,123,56		EB7B38		387BEB
+orange hp bar 	RGB			BGR
+235,123,56 		EB7B38 		387BEB
 
-red hp bar		RGB			BGR
-241,72,71		F14847		4748F1
+red hp bar 		RGB			BGR
+241,72,71 		F14847 		4748F1
 */
 
 //BGR
@@ -77,10 +77,12 @@ BOOL ScanPixel(HWND hwnd, PLONG pixelX, PLONG pixelY, RECT scanArea, COLORREF* t
 	ReleaseDC(NULL, hdc);
 	//ReleaseDC(hwnd, hdc);
 
-	// Scan from bottom to top
-	for (int y = scanHeight; y >= 0; y--) 
+	// Scan
+	//for (int y = scanHeight; y >= 0; y--) //scan from bottom to top
+	//for (int y = 0; y < scanHeight; y += 2) //step 2
+	for (int y = 0; y < scanHeight; y++)
 	{
-		//for (int x = 0; x < scanWidth; x+= 4) //step 4
+		//for (int x = 0; x < scanWidth; x+= 2) //step 2
 		for (int x = 0; x < scanWidth; x++) 
 		{
 			BYTE r = bitData[3 * ((y * scanWidth) + x) + 2];
