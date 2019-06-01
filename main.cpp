@@ -33,7 +33,7 @@ COLORREF targetColors[3] = { 0x3AFF3A, 0x2EDE2E, 0x32EE32 }; //aim at green enem
 // settings
 DWORD Daimkey = VK_SHIFT;	//aimkey (VK_SHIFT, VK_RBUTTON etc.)
 int tolerance = 20;			//0-50 color tolerance
-int aimsens = 8;			//aim sensitivity (higher = smoother), setting depends on your mouse sensitivity 
+int aimsens = 7;			//aim sensitivity (higher = smoother), setting depends on your mouse sensitivity 
 int aimheight = 30;			//+ to aim higher, - to aim lower 
 int aimfov = 10;			//low value = high aimfov, higher value = lower aimfov
 
@@ -67,7 +67,6 @@ BOOL ScanPixel(HWND hwnd, PLONG pixelX, PLONG pixelY, RECT scanArea, COLORREF* t
 	SelectObject(_hdcMem, bmp);
 
 	BitBlt(_hdcMem, 0, 0, scanWidth, scanHeight, hdc, scanArea.left, scanArea.top, SRCCOPY);
-	//BitBlt(_hdcMem, 0, 0, scanArea.left, scanArea.top, hdc, scanArea.left, scanArea.top, SRCCOPY); //
 	
 	GetDIBits(hdc, bmp, 0, scanHeight, bitData, (BITMAPINFO*)&bmi, DIB_RGB_COLORS);
 
@@ -80,15 +79,15 @@ BOOL ScanPixel(HWND hwnd, PLONG pixelX, PLONG pixelY, RECT scanArea, COLORREF* t
 	// Scan from bottom to top
 	for (int y = scanHeight; y >= 0; y--) 
 	{
+		//for (int x = 0; x < scanWidth; x+= 4) //step 4
 		for (int x = 0; x < scanWidth; x++) 
-		//for (int x = 0; x < scanArea.left; x++)
 		{
 			BYTE r = bitData[3 * ((y * scanWidth) + x) + 2];
 			BYTE g = bitData[3 * ((y * scanWidth) + x) + 1];
 			BYTE b = bitData[3 * ((y * scanWidth) + x) + 0];
 
 			//for (int i = 0; i < targetColors[i]; i++)
-			for (int i = 0; i < 3; i++) //3 if targetColors[4]
+			for (int i = 0; i < 3; i++) //3 if targetColors[3]
 			{ 
 				UINT targetR = GetRValue(targetColors[i]);
 				UINT targetG = GetGValue(targetColors[i]);
