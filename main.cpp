@@ -13,15 +13,15 @@
 #pragma comment(lib, "winmm.lib") //timeGetTime
 
 /*
-green color		RGB			BGR
+green color	RGB			BGR
 58,255,58 		3AFF3A 		3AFF3A
 46,222,46 		2EDE2E 		2EDE2E
 50,238,50 		32EE32 		32EE32
 
 orange hp bar 	RGB			BGR
-235,123,56 		EB7B38 		387BEB
+235,123,56 	EB7B38 		387BEB
 
-red hp bar 		RGB			BGR
+red hp bar 	RGB			BGR
 241,72,71 		F14847 		4748F1
 */
 
@@ -33,9 +33,9 @@ COLORREF targetColors[3] = { 0x3AFF3A, 0x2EDE2E, 0x32EE32 }; //aim at green enem
 
 // settings
 DWORD Daimkey = VK_SHIFT;	//aimkey (VK_SHIFT, VK_RBUTTON etc.)
-int tolerance = 20;			//0-50 color tolerance
-int aimsens = 7;			//aim sensitivity (higher = smoother), setting depends on your mouse sensitivity 
-int aimheight = 30;			//+ to aim higher, - to aim lower 
+int tolerance = 20;		//0-50 color tolerance
+int aimsens = 8;			//aim sensitivity (higher = smoother), setting depends on your mouse sensitivity 
+int aimheight = 30;		//+ to aim higher, - to aim lower 
 int aimfov = 10;			//low value = high aimfov, higher value = lower aimfov
 
 DWORD astime = timeGetTime();	//autoshoot timer
@@ -76,14 +76,13 @@ BOOL ScanPixel(HWND hwnd, PLONG pixelX, PLONG pixelY, RECT scanArea, COLORREF* t
 	DeleteDC(_hdcMem);
 	ReleaseDC(NULL, hdc);
 	//ReleaseDC(hwnd, hdc);
-
-	// Scan
-	//for (int y = scanHeight; y >= 0; y--) //scan from bottom to top
-	//for (int y = 0; y < scanHeight; y += 2) //step 2
-	for (int y = 0; y < scanHeight; y++)
+	
+	// Scan 1 from top to bottom
+	for (int y = 0; y < scanHeight; y += 2) //step 2
+	//for (int y = 0; y < scanHeight; y++)
 	{
-		//for (int x = 0; x < scanWidth; x+= 2) //step 2
-		for (int x = 0; x < scanWidth; x++) 
+		for (int x = 0; x < scanWidth; x+= 2) //step 2
+		//for (int x = 0; x < scanWidth; x++) 
 		{
 			BYTE r = bitData[3 * ((y * scanWidth) + x) + 2];
 			BYTE g = bitData[3 * ((y * scanWidth) + x) + 1];
@@ -108,7 +107,39 @@ BOOL ScanPixel(HWND hwnd, PLONG pixelX, PLONG pixelY, RECT scanArea, COLORREF* t
 			}
 		}
 	}
+	
 
+	// Scan 2 from bottom to top
+	//for (int y = scanHeight; y >= 0; y-= 2)
+	for (int y = scanHeight; y >= 0; y--)
+	{
+		//for (int x = scanWidth; x >= 0; x-= 2)
+		for (int x = scanWidth; x >= 0; x--)
+		{
+			BYTE r = bitData[3 * ((y * scanWidth) + x) + 2];
+			BYTE g = bitData[3 * ((y * scanWidth) + x) + 1];
+			BYTE b = bitData[3 * ((y * scanWidth) + x) + 0];
+
+			//for (int i = 0; i < targetColors[i]; i++)
+			for (int i = 0; i < 3; i++) //3 if targetColors[3]
+			{
+				UINT targetR = GetRValue(targetColors[i]);
+				UINT targetG = GetGValue(targetColors[i]);
+				UINT targetB = GetBValue(targetColors[i]);
+
+				if (r >= targetR - deviation && r <= targetR + deviation &&
+					g >= targetG - deviation && g <= targetG + deviation &&
+					b >= targetB - deviation && b <= targetB + deviation)
+				{
+					*pixelX = scanArea.left + x;
+					*pixelY = scanArea.top + y - aimheight;
+					*foundColor = targetColors[i];
+					return TRUE;
+				}
+			}
+		}
+	}
+	
 	return FALSE;
 }
 
