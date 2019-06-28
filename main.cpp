@@ -13,36 +13,36 @@
 #pragma comment(lib, "winmm.lib") //timeGetTime
 
 /*
-green color	RGB			BGR
-58,255,58 		3AFF3A 		3AFF3A
-46,222,46 		2EDE2E 		2EDE2E
-50,238,50 		32EE32 		32EE32
+green color	RGB		BGR
+58,255,58 	3AFF3A 		3AFF3A
+46,222,46 	2EDE2E 		2EDE2E
+50,238,50 	32EE32 		32EE32
 
-orange hp bar 	RGB			BGR
+orange hp bar 	RGB		BGR
 235,123,56 	EB7B38 		387BEB
 
-red hp bar 	RGB			BGR
-241,72,71 		F14847 		4748F1
+red hp bar 	RGB		BGR
+241,72,71 	F14847 		4748F1
 */
 
 //BGR
 COLORREF targetColors[3] = { 0x3AFF3A, 0x2EDE2E, 0x32EE32 }; //aim at green enemy colors in quake live (does not aim at enemies with blue quad aura)
-//COLORREF targetColors[7] = { 0x00FF00, 0x34FF34, 0x4EFF4E, 0x66FF66, 0x6AFF6A, 0x49FF49, 0x4AFF4A }; //aim at green color example
-//COLORREF targetColors[7] = { 0xFF0000, 0xFF3434, 0xFF4E4E, 0xFF6666, 0xFF6A6A, 0xFF4949, 0xFF4A4A }; //aim at blue color example
-//COLORREF targetColors[7] = { 0x0000FF, 0x3434FF, 0x4E4EFF, 0x6666FF, 0x6A6AFF, 0x4949FF, 0x4A4AFF }; //aim at red color example
+//COLORREF targetColors[3] = { 0x00FF00, 0x34FF34, 0x4EFF4E }; //aim at green color example
+//COLORREF targetColors[3] = { 0xFF0000, 0xFF3434, 0xFF4E4E }; //aim at blue color example
+//COLORREF targetColors[3] = { 0x0000FF, 0x3434FF, 0x4E4EFF }; //aim at red color example
 
 // settings
 DWORD Daimkey = VK_SHIFT;	//aimkey (VK_SHIFT, VK_RBUTTON etc.)
 int tolerance = 20;		//0-50 color tolerance
-int aimsens = 8;			//aim sensitivity (higher = smoother), setting depends on your mouse sensitivity 
+int aimsens = 8;		//aim sensitivity (higher = smoother), setting depends on your mouse sensitivity 
 int aimheight = 30;		//+ to aim higher, - to aim lower 
-int aimfov = 10;			//low value = high aimfov, higher value = lower aimfov
+int aimfov = 10;		//low value = high aimfov, higher value = lower aimfov
 
 DWORD astime = timeGetTime();	//autoshoot timer
-unsigned int asdelay = 50;		//wait 50ms
+unsigned int asdelay = 50;	//wait 50ms
 bool IsPressed = false;
 
-BYTE colorDeviation = 0x10;
+BYTE colorDeviation = 0x0;
 BYTE* bitData = NULL;
 
 
@@ -95,9 +95,7 @@ BOOL ScanPixel(HWND hwnd, PLONG pixelX, PLONG pixelY, RECT scanArea, COLORREF* t
 				UINT targetG = GetGValue(targetColors[i]);
 				UINT targetB = GetBValue(targetColors[i]);
 
-				if (r >= targetR - deviation && r <= targetR + deviation &&
-					g >= targetG - deviation && g <= targetG + deviation &&
-					b >= targetB - deviation && b <= targetB + deviation)
+				if (r <= (targetR + tolerance) && r >= (targetR - tolerance) && g <= (targetG + tolerance) && g >= (targetG - tolerance) && b <= (targetB + tolerance) && b >= (targetB - tolerance))
 				{
 					*pixelX = scanArea.left + x;
 					*pixelY = scanArea.top + y - aimheight;
@@ -127,9 +125,7 @@ BOOL ScanPixel(HWND hwnd, PLONG pixelX, PLONG pixelY, RECT scanArea, COLORREF* t
 				UINT targetG = GetGValue(targetColors[i]);
 				UINT targetB = GetBValue(targetColors[i]);
 
-				if (r >= targetR - deviation && r <= targetR + deviation &&
-					g >= targetG - deviation && g <= targetG + deviation &&
-					b >= targetB - deviation && b <= targetB + deviation)
+				if (r <= (targetR + tolerance) && r >= (targetR - tolerance) && g <= (targetG + tolerance) && g >= (targetG - tolerance) && b <= (targetB + tolerance) && b >= (targetB - tolerance))
 				{
 					*pixelX = scanArea.left + x;
 					*pixelY = scanArea.top + y - aimheight;
@@ -183,6 +179,7 @@ int main()
 	{
 		//use the right findwindow for your game
 		hwnd = FindWindowA(0, "Quake Live");
+		//hwnd = FindWindowA("Lovecraft", NULL); //quake champions
 		//hwnd = FindWindowA("LaunchUnrealUWindowsClient", NULL); //ut3
 		//hwnd = FindWindowA("UnrealWindow", 0); //ut4
 		Sleep(500);
